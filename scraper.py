@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+
+# BeautifulSoup is a Python library to scrape HTML data
+from bs4 import BeautifulSoup
+# Requests allows us to fetch files from remote web servers
+import requests
+# re is the Python Regular Expression library
+import re
+
+from pprint import PrettyPrinter
+
+# This is a python library I wrote which contains the functions to process
+# individual University entries
+import uni
+
+# This is a Regular Expression to search for a UK Postcode
+postcode = re.compile('\b([A-Z]{1,2}[0-9][A-Z0-9]? [0-9][ABD-HJLNP-UW-Z]{2})\b')
+
+# The URL for the website I will be scraping
+# Put it in a variable so that if it changes (or I need to scrape a different
+# site) it's easy to change
+list_url = 'https://www.thecompleteuniversityguide.co.uk'
+
+# (for now) export a csv file, so I'm importing the csv library.
+# One day I'd like to connect directly to MySQL to update the database 
+# dynamically, but for now, CSV will do
+import csv
+
+# This  line opens "universities.csv" for writing.
+with open( 'universities.csv', 'w') as csvfile:
+    # List of the fields in the CSV file
+    fieldnames = [ 'label', 'cost', 'lat', 'lng', 'url']
+    # Creates a "writer" object on the file chosen and with thise field names
+    writer = csv.DictWriter( csvfile, fieldnames=fieldnames)
+    # Writes the CSV file header. Note Javascript-like method syntax
+    writer.writeheader()
+
+    # This like actually fetches the page with hte list of universities on it
+    # It's helpful to open it in a browser window to see what exactly 
+    # is going on
+    list = requests.get( list_url + '/universities/')
+
+    # This command takes the text from the response to the http fetch
+    # (you can also look at the http response codes and so forth if
+    # you wish to) and makes a BeautifulSoup object from it, parsing it 
+    # as an HTML file (other parsers are available)
+    doc = BeautifulSoup(list.text, features="html.parser")
+
+    # On the page, the list of Universities is inside <div class="box-content">
+    # So what this does, is it searches through the 'doc' object (which is 
+    # already parsed into a tree of HTML entities) to find one which is 
+    # class="box-content" - and then returns thst bit of the tree (as another 
+    # BeautifulSoup object, which is rather neat if you think about it)
+    box = doc.find( class_="box-content")
+
+    # Now, the list of links is inside one of a number of 
+    # <div class="columnarList">
+    # Since we do find_all on this, we get back a list (more strictly an 
+    # "iterator")
+
+    unis = box.find_all( class_ = "columnarList")
+
+    # Now iterate through each of these links and get out the HREF
+
+    for sublist in unis:
+        # Remember, each element here is also a BeautifulSoup object, so we 
+        # can apply exactly the same methods to them as well.
+        # I've cut a corner here by directly iterating over
+        # the result of sublist.find_all("a") (each of which will be an
+        # anchor tag) - in fact this whole nest of loops could all be stacked on 
+        # top of each other: however that would be confusing, and is potentially 
+        # error-prone
+        for link in sublist.find_all("a"):
+
+            # This is where we do the real meat: link.get('href') returns the 
+            # href field of the anchor, which we pass to a routine in uni.py to 
+            # do something with. See uni.py for what exactly it does.
+            e = uni.process(link.get('href'))
+
+            # uni.process will either return a data structure for this 
+            # particular university, or it will return nothing, in whic hcase 
+            # just skip it...
+            if e:
+                
+                # Not all of the Universities have an easily findable address, 
+                # and hence I can't then find the latitude and longitude. In 
+                # which case I can't put it on the map. Since none of them are 
+                # on the equator (HaHa!) testing if the latitude is non-zero 
+                # works here...
+                if (e['lat'] != 0):
+                    
+                    # There is one (Welsh) university whose name has an accented # character in it. This breaks things further down the line, # so we need to make sure that it's readable in Unicode...
+                    e['label'] = e['label'].encode("utf-8")
+                    
+                    # We've got this far, so write the line of CSV to the csv 
+                    # file, and then go right back to line 65 and loop round and 
+                    # round until we've done all 170 or so rows...
+                    writer.writerow( e ) 
+
+# ...and that's it! Python will neatly close the file for us and tidy up any 
+# other data structures etc. at this stage. Thank you and Good Night!

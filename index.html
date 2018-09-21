@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DAMP Demo Application</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 80%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div><h2>DAMP Demo Application</h2></div>
+    <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 50.8136354, lng: -1.1026097},
+          zoom: 8
+        });
+      var locations = [
+	       {
+		      label: 'Portsmouth',
+              icon: {
+                url: 'pound.png',
+                scaledSize: new google.maps.Size(70, 70),  
+              },  
+		      cost: 700,
+		      position: {
+			     lat: 50.8198,
+			     lng: -1.0880,
+		      },
+            map: map,
+            title: 'City: Portsmouth, Rent: £700/month',
+	       },
+	       {
+		      label: 'Brighton',
+               icon: {
+                url: 'pound.png',
+                scaledSize: new google.maps.Size(95, 95),  
+              },  
+		      cost: 950,
+		      position: {
+			     lat : 50.8225,
+			     lng: -0.1372,
+		      },
+            map: map,
+           title: 'City: Brighton, Rent: £950/month',
+
+           },
+	       {
+		      label: 'Southamption',
+		      cost: 750,
+               icon: {
+                url: 'pound.png',
+                scaledSize: new google.maps.Size(75, 75),  
+              },  
+
+		      position: {
+			     lat : 50.9097,
+			     lng: -1.4044,
+		      },
+             title: 'City: Southampton, Rent: £750/month',
+               map: map,
+	       },
+	       {
+		      label: 'London',
+		      cost: 1400,
+               icon: {
+                url: 'pound.png',
+                scaledSize: new google.maps.Size(140, 140),  
+              },  
+           title: 'City: London, Rent: £1400/month',
+
+		      position: {
+			     lat : 51.5074,
+			     lng: -0.1278,
+		      },
+            map: map,
+	       },
+	       {
+		      label: 'Oxford',
+		      cost: 1000,
+		      position: {
+			     lat : 51.7520,
+			     lng: -1.2577,
+		      },
+                     title: 'City: Oxford, Rent: £1000/month',
+
+               icon: {
+                url: 'pound.png',
+                scaledSize: new google.maps.Size(100, 100),  
+              },  
+
+            map: map,
+	       },
+      ];
+          locations.forEach(
+              function(l) {
+                    new google.maps.Marker(l);
+              }
+          );
+
+ /*         var marker = new google.maps.Marker(
+            {
+                label: 'Lewes', 
+                position: {lat: 50.837, lng: 0}, 
+                map: map
+            }
+        ) */
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMja_ebwVboXmPxIODptoHCWMcLR6CSMI&callback=initMap"
+    async defer></script>
+<!--      <pre>
+    <script>
+        var portsmouth = $.get("https://maps.googleapis.com/maps/api/geocode/json?address=Portsmouth,UK&key=AIzaSyDMja_ebwVboXmPxIODptoHCWMcLR6CSMI");
+        alert(portsmouth.value);
+    </script>
+    </pre> -->
+  </body>
+</html>

@@ -1,0 +1,8 @@
+    1: g_key = 'AIzaSyDMja_ebwVboXmPxIODptoHCWMcLR6CSMI'
+       
+    1: DB_CONFIG = {
+    1:     'host' : 'andyholyer.ct.port.ac.uk:3306',
+    1:     'database': 'DAMP_ajh',
+    1:     'user': 'DAMP_ajh',
+    1:     'password': 'ie7Li8$0',
+       }
