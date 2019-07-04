@@ -1,0 +1,10 @@
+How to run the scraper application
+
+$ python scraper.py
+
+This will build a new file universities.csv, which you can then import into MySQL
+
+You may need to install BeautifulSoup and the googlemaps libraries to get it to work:
+
+$ sudo pip install beautifulsoup4
+$ sudo pip install googlemaps
